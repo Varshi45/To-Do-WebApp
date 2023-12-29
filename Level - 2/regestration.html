@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regestration Form</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-size: larger;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        color: aliceblue;
+      }
+      .box {
+        background-color: dimgray;
+        margin: 10%;
+        width: 35%;
+      }
+      h1 {
+        font-size: 300%;
+        text-align: center;
+        background-image: linear-gradient(
+          to right,
+          black,
+          red,
+          green,
+          yellow,
+          orange,
+          white
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+        background-size: 300%;
+        background-position: -100%;
+        animation: animatedText 10s infinite alternate-reverse;
+      }
+      @keyframes animatedText {
+        to {
+          background-position: 100%;
+        }
+      }
+      input {
+        margin: 2%;
+      }
+      .buttonClass {
+        font-size: 15px;
+        font-family: Arial;
+        width: 140px;
+        height: 50px;
+        border-width: 1px;
+        color: #fff;
+        border-color: #ffffff;
+        border-top-left-radius: 42px;
+        border-top-right-radius: 42px;
+        border-bottom-left-radius: 42px;
+        border-bottom-right-radius: 42px;
+        box-shadow: inset 0px 39px 0px -24px #e67a73;
+        text-shadow: inset 0px 1px 0px #b23e35;
+        background: #e4685d;
+      }
+      .buttonClass:hover {
+        background: #eb675e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <form onclick="return valid" action="success.html">
+        <h1>Register Now!</h1>
+        <table>
+          <tr>
+            <td><label for="name">Name :-</label></td>
+            <td>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="Enter Your Name"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="email">E-Mail :-</label></td>
+            <td>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Enter Your E-Mail"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="password">Password :-</label></td>
+            <td>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                placeholder="Enter Password"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="dob">Date of Birth :-</label></td>
+            <td><input type="date" id="dob" name="dob" required /></td>
+          </tr>
+        </table>
+
+        <input type="checkbox" name="tnc" id="tnc" />
+        <label for="tnc">Accept Terms & Conditions</label><br />
+
+        <center>
+          <button
+            class="buttonClass"
+            type="submit"
+            id="submit"
+            onclick="valid()"
+          >
+            Submit
+          </button>
+        </center>
+      </form>
+    </div>
+
+    <script>
+      function valid() {
+        var username = document.getElementById("name").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        if (username == "") {
+          alert("Please Fill Your correct Name!");
+          return false;
+        }
+        if (email == "") {
+          alert("Please Enter Your personal E-mail!");
+          return false;
+        }
+        if (password == "") {
+          alert("Please Enter Password");
+          return false;
+        }
+
+        const dobInput = document.getElementById("dob");
+        const inputDate = new Date(dobInput.value);
+        const today = new Date();
+        const minAge = today.getFullYear() - 55;
+        const maxAge = today.getFullYear() - 18;
+        const minDate = new Date(minAge, today.getMonth(), today.getDate());
+        const maxDate = new Date(maxAge, today.getMonth(), today.getDate());
+
+        if (inputDate < minDate || inputDate > maxDate) {
+          alert("Please enter a valid date of birth between 18 and 55 years.");
+          dobInput.focus(); // Focus on the date input for correction.
+          return false;
+        }
+
+        return true;
+      }
+    </script>
+  </body>
+</html>
