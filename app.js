@@ -6,8 +6,14 @@ app.use(bodyParser.json());
 const { Todo } = require("./models");
 
 // eslint-disable-next-line no-unused-vars
-app.get("/todos", (request, response) => {
-  console.log("todo list");
+app.get("/todos", async (request, response) => {
+  try {
+    const todos = await Todo.findAll();
+    return response.json(todos);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.post("/todos", async (request, response) => {
@@ -39,8 +45,17 @@ app.put("/todos/:id/markAsComplete", async (request, response) => {
 });
 
 // eslint-disable-next-line no-unused-vars
-app.delete("/todos/:id", (request, response) => {
+app.delete("/todos/:id", async (request, response) => {
   console.log("todo deleted with ID - ", request.params.id);
+  try {
+    const deletedTodoCount = await Todo.destroy({
+      where: { id: request.params.id },
+    });
+    return response.json({ success: deletedTodoCount > 0 });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // app.listen(3000,()=>{
