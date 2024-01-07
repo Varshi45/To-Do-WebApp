@@ -1,3 +1,5 @@
+<!-- views/index.ejs -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,14 +11,30 @@
 <body>
     <!-- Todo Home Page -->
     <%- include('header.ejs') %>
-    <table>
-        <% for (var i = 0; i<allTodos.length; i++){ %>
-        <tr>
-            <td>
-                <%= allTodos[i].title %>
-            </td>
-        </tr>
-        <% } %>
-    </table>
+
+    <% const categories = ['Overdue', 'Due Today', 'Due Later']; %>
+
+    <% const today = new Date(); %>
+
+    <% for (var category of categories) { %>
+        <h2><%= category %></h2>
+        
+        <% const categoryTodos = allTodos.filter(todo => {
+            if (category === 'Overdue') {
+                return new Date(todo.dueDate) < today;
+            } else if (category === 'Due Today') {
+                return new Date(todo.dueDate).toDateString() === today.toDateString();
+            } else if (category === 'Due Later') {
+                return new Date(todo.dueDate) > today;
+            }
+        }); %>
+
+        <p><%= categoryTodos.length %> Todos</p>
+        
+        <!-- Render the todos.ejs partial for each category -->
+        <%- include('todos.ejs', { todos: categoryTodos }) %>
+    <% } %>
+
+    
 </body>
 </html>

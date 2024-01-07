@@ -9,15 +9,21 @@ const { Todo } = require("./models");
 app.set("view engine", "ejs");
 
 app.get("/", async (request, response) => {
-  const allTodos = await Todo.getTodos();
-  if (request.accepts("html")) {
-    response.render("index", {
-      allTodos,
-    });
-  } else {
-    response.json({
-      allTodos,
-    });
+  try {
+    const allTodos = await Todo.getTodos();
+
+    if (request.accepts("html")) {
+      response.render("index", {
+        allTodos,
+      });
+    } else {
+      response.json({
+        allTodos,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
   }
 });
 

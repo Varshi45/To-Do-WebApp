@@ -1,0 +1,15 @@
+<!-- views/todos.ejs -->
+<div class="todos-container">
+    <ul class="todos-list">
+        <% for (var todo of todos) { %>
+            <li class="todo-item">
+                <span><%= todo.title %></span>
+                <span><%= todo.dueDate %></span>
+                <span><%= todo.completed %></span>
+                
+                <!-- <button class="complete-button">Mark as Complete</button>
+                <button class="delete-button">Delete</button> -->
+            </li>
+        <% } %>
+    </ul>
+</div>
