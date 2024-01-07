@@ -65,6 +65,10 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
+    static getTodos() {
+      return this.findAll();
+    }
+
     static async overdue() {
       try {
         const currentDate = new Date();
