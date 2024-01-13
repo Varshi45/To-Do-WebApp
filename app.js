@@ -8,6 +8,8 @@ const { Todo } = require("./models");
 
 app.set("view engine", "ejs");
 
+app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/", async (request, response) => {
   try {
     const allTodos = await Todo.getTodos();
@@ -26,8 +28,6 @@ app.get("/", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-app.use(express.static(path.join(__dirname, "public")));
 
 // eslint-disable-next-line no-unused-vars
 app.get("/todos", async (request, response) => {
@@ -56,7 +56,6 @@ app.post("/todos", async (request, response) => {
 });
 
 app.put("/todos/:id/markAsComplete", async (request, response) => {
-  console.log("Marked as complete - ", request.params.id);
   try {
     const updatedTodo = await Todo.markAsComplete(request.params.id);
     return response.json(updatedTodo);
@@ -72,10 +71,8 @@ app.put("/todos/:id/markAsComplete", async (request, response) => {
 app.delete("/todos/:id", async (request, response) => {
   console.log("todo deleted with ID - ", request.params.id);
   try {
-    const deletedTodoCount = await Todo.destroy({
-      where: { id: request.params.id },
-    });
-    return response.json({ success: deletedTodoCount > 0 });
+    await Todo.remove(request.params.id);
+    return response.json({ success: true });
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error: "Internal Server Error" });

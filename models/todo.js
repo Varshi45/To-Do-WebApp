@@ -45,6 +45,14 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
+    static async remove(id) {
+      return this.destroy({
+        where: {
+          id,
+        },
+      });
+    }
+
     static async markAsComplete(id) {
       try {
         const todo = await Todo.findByPk(id);
@@ -53,9 +61,9 @@ module.exports = (sequelize, DataTypes) => {
           throw new Error(`Todo with ID ${id} not found.`);
         }
 
-        todo.completed = true;
+        todo.completed = !todo.completed;
         await todo.save();
-        console.log(`Todo with ID ${id} marked as complete.`);
+        console.log(`Todo with ID ${id} marked as ${todo.completed}.`);
 
         // Return the updated todo after marking as complete
         return todo.toJSON();

@@ -8,6 +8,49 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Document</title>
+    <script>
+        function addTodo() {
+            const title = document.getElementById('title').value;
+            const dueDate = document.getElementById('dueDate').value;
+            fetch('/todos', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, dueDate }),
+            })
+                .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+                })
+                .catch((err) => console.error(err));
+            }
+        function updateTodo(id){
+            fetch(`/todos/${id}/markAsComplete`,{
+                method: "put",
+                headers: {"Content-Type":"application/json"}
+            })
+                .then((res) =>{
+                    if(res.ok){
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+        }
+        function deleteTodo(id){
+            fetch(`/todos/${id}`,{
+                method : "delete",
+                headers: {"Content-Type":"application/json"}
+            })
+                .then((res) =>{
+                    if (res.ok){
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err))
+        }
+    </script>
 </head>
 <body>
     <!-- Todo Home Page -->
@@ -17,20 +60,23 @@
             <%- include('header.ejs') %>
         </div>
     </div>
-
-    <form class="w-1/2 mx-auto" action="/todos" method="post">
+    
+    <form id="todoForm" class="w-1/2 mx-auto">
         <div class="flex gap-2 py-4">
             <div class="flex-auto">
-                <input type="text" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
+                <label for="title" class="sr-only">Title</label>
+                <input type="text" id="title" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
             </div>
             <div class="flex-auto">
-                <input type="date" name="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4	">
+                <label for="dueDate" class="sr-only">Due Date</label>
+                <input type="date" id="dueDate" name="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4 required">
             </div>
             <div class="flex-none">
-                <button type="submit" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
-            </div>            
+                <button type="button" onclick="addTodo()" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
+            </div>
         </div>
     </form>
+    
 
     <% const categories = ['Overdue', 'Due Today', 'Due Later']; %>
 
@@ -54,7 +100,7 @@
                 <p><%= categoryTodos.length %> Todos</p>
                 
                 <!-- Render the todos.ejs partial for each category -->
-                <%- include('todos.ejs', { todos: categoryTodos }) %>
+                <%- include('todo.ejs', { todos: categoryTodos }) %>
             </div>
         <% } %>
     </div>
