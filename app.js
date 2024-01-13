@@ -1,8 +1,13 @@
 const express = require("express");
+var csrf = require("csurf");
 const app = express();
 const bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 const path = require("path");
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser("shh! some secret string"));
+app.use(csrf({ cookie: true }));
 
 const { Todo } = require("./models");
 
@@ -13,10 +18,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", async (request, response) => {
   try {
     const allTodos = await Todo.getTodos();
-
     if (request.accepts("html")) {
       response.render("index", {
         allTodos,
+        csrfToken: request.csrfToken(),
       });
     } else {
       response.json({

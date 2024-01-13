@@ -12,10 +12,12 @@
         function addTodo() {
             const title = document.getElementById('title').value;
             const dueDate = document.getElementById('dueDate').value;
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
             fetch('/todos', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken,
                 },
                 body: JSON.stringify({ title, dueDate }),
             })
@@ -27,9 +29,13 @@
                 .catch((err) => console.error(err));
             }
         function updateTodo(id){
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
             fetch(`/todos/${id}/markAsComplete`,{
                 method: "put",
-                headers: {"Content-Type":"application/json"}
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken,
+                },
             })
                 .then((res) =>{
                     if(res.ok){
@@ -39,9 +45,13 @@
                 .catch((err) => console.error(err));
         }
         function deleteTodo(id){
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
             fetch(`/todos/${id}`,{
                 method : "delete",
-                headers: {"Content-Type":"application/json"}
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken,
+                },
             })
                 .then((res) =>{
                     if (res.ok){
@@ -60,8 +70,9 @@
             <%- include('header.ejs') %>
         </div>
     </div>
-    
-    <form id="todoForm" class="w-1/2 mx-auto">
+     
+    <form id="todoForm" class="w-1/2 mx-auto" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="flex gap-2 py-4">
             <div class="flex-auto">
                 <label for="title" class="sr-only">Title</label>
