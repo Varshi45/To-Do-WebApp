@@ -6,35 +6,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Document</title>
 </head>
 <body>
     <!-- Todo Home Page -->
-    <%- include('header.ejs') %>
+    <!-- <%- include('header.ejs') %> -->
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs') %>
+        </div>
+    </div>
+
+    <form class="w-1/2 mx-auto" action="/todos" method="post">
+        <div class="flex gap-2 py-4">
+            <div class="flex-auto">
+                <input type="text" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
+            </div>
+            <div class="flex-auto">
+                <input type="date" name="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4	">
+            </div>
+            <div class="flex-none">
+                <button type="submit" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
+            </div>            
+        </div>
+    </form>
 
     <% const categories = ['Overdue', 'Due Today', 'Due Later']; %>
 
     <% const today = new Date(); %>
 
-    <% for (var category of categories) { %>
-        <h2><%= category %></h2>
-        
-        <% const categoryTodos = allTodos.filter(todo => {
-            if (category === 'Overdue') {
-                return new Date(todo.dueDate) < today;
-            } else if (category === 'Due Today') {
-                return new Date(todo.dueDate).toDateString() === today.toDateString();
-            } else if (category === 'Due Later') {
-                return new Date(todo.dueDate) > today;
-            }
-        }); %>
-
-        <p><%= categoryTodos.length %> Todos</p>
-        
-        <!-- Render the todos.ejs partial for each category -->
-        <%- include('todos.ejs', { todos: categoryTodos }) %>
-    <% } %>
-
+    <div class="flex gap-4 w-3/4 mx-auto">
+        <% for (var category of categories) { %>
+            <div class="flex-auto">
+                <h2><%= category %></h2>
+                
+                <% const categoryTodos = allTodos.filter(todo => {
+                    if (category === 'Overdue') {
+                        return new Date(todo.dueDate) < today;
+                    } else if (category === 'Due Today') {
+                        return new Date(todo.dueDate).toDateString() === today.toDateString();
+                    } else if (category === 'Due Later') {
+                        return new Date(todo.dueDate) > today;
+                    }
+                }); %>
     
+                <p><%= categoryTodos.length %> Todos</p>
+                
+                <!-- Render the todos.ejs partial for each category -->
+                <%- include('todos.ejs', { todos: categoryTodos }) %>
+            </div>
+        <% } %>
+    </div>
+    
+
 </body>
 </html>

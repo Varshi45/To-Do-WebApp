@@ -3,7 +3,10 @@
     <ul class="todos-list">
         <% for (var todo of todos) { %>
             <li class="todo-item">
-                <span><%= todo.title %></span>
+                <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
+                    <input id="todo-checkbox-<%= todo.id %>" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300" <%= todo.completed ? 'checked' : '' %>>
+                    <label for="todo-checkbox-<%= todo.id %>" class="ml-2 text-sm text-gray-600 cursor-pointer"><%= todo.title %></label>
+                </div>
                 <span><%= todo.dueDate %></span>
                 <span><%= todo.completed %></span>
                 
