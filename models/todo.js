@@ -32,6 +32,32 @@ module.exports = (sequelize, DataTypes) => {
       completedTasks.forEach((task) => console.log(task.displayableString()));
     }
 
+    static async setCompletionStatus(id, completed) {
+      try {
+        const todo = await Todo.findByPk(id);
+
+        if (!todo) {
+          throw new Error(`Todo with ID ${id} not found.`);
+        }
+
+        // Toggle completion status
+        todo.completed = !todo.completed;
+        await todo.save();
+
+        console.log(
+          `Todo with ID ${id} marked as ${
+            todo.completed ? "completed" : "incomplete"
+          }.`,
+        );
+
+        // Return the updated todo after setting completion status
+        return todo.toJSON();
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
     static async completed() {
       try {
         return await Todo.findAll({

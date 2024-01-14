@@ -13,48 +13,57 @@
             const title = document.getElementById('title').value;
             const dueDate = document.getElementById('dueDate').value;
             const csrfToken = document.querySelector('input[name="_csrf"]').value;
+    
+            if (!title || !dueDate) {
+                alert("Please enter both title and due date.");
+                return;
+            }
             fetch('/todos', {
                 method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': csrfToken,
-                },
-                body: JSON.stringify({ title, dueDate }),
-            })
-                .then((res) => {
-                if (res.ok) {
-                    window.location.reload();
-                }
-                })
-                .catch((err) => console.error(err));
-            }
-        function updateTodo(id){
-            const csrfToken = document.querySelector('input[name="_csrf"]').value;
-            fetch(`/todos/${id}/markAsComplete`,{
-                method: "put",
                 headers: {
                     'Content-Type': 'application/json',
                     'CSRF-Token': csrfToken,
                 },
+                body: JSON.stringify({ title, dueDate }),
             })
-                .then((res) =>{
-                    if(res.ok){
+                .then((res) => {
+                    if (res.ok) {
                         window.location.reload();
                     }
                 })
                 .catch((err) => console.error(err));
         }
-        function deleteTodo(id){
+    
+        function updateTodo(id) {
             const csrfToken = document.querySelector('input[name="_csrf"]').value;
-            fetch(`/todos/${id}`,{
-                method : "delete",
+            const completed = true; // You may adjust this based on your requirements
+    
+            fetch(`/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken,
+                },
+                body: JSON.stringify({ completed }),
+            })
+                .then((res) => {
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+        }
+        function deleteTodo(id) {
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+            fetch(`/todos/${id}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'CSRF-Token': csrfToken,
                 },
             })
-                .then((res) =>{
-                    if (res.ok){
+                .then((res) => {
+                    if (res.ok) {
                         window.location.reload();
                     }
                 })
@@ -89,7 +98,7 @@
     </form>
     
 
-    <% const categories = ['Overdue', 'Due Today', 'Due Later']; %>
+    <% const categories = ['Overdue', 'Due Today', 'Due Later', 'Completed']; %>
 
     <% const today = new Date(); %>
 
@@ -100,11 +109,13 @@
                 
                 <% const categoryTodos = allTodos.filter(todo => {
                     if (category === 'Overdue') {
-                        return new Date(todo.dueDate) < today;
+                        return new Date(todo.dueDate) < today && !todo.completed && new Date(todo.dueDate).toDateString() !== today.toDateString();
                     } else if (category === 'Due Today') {
-                        return new Date(todo.dueDate).toDateString() === today.toDateString();
+                        return new Date(todo.dueDate).toDateString() === today.toDateString() && !todo.completed;
                     } else if (category === 'Due Later') {
-                        return new Date(todo.dueDate) > today;
+                        return new Date(todo.dueDate) > today && !todo.completed && new Date(todo.dueDate).toDateString() !== today.toDateString();
+                    } else if (category === 'Completed') {
+                        return todo.completed;
                     }
                 }); %>
     

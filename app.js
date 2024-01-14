@@ -35,54 +35,72 @@ app.get("/", async (request, response) => {
 });
 
 // eslint-disable-next-line no-unused-vars
-app.get("/todos", async (request, response) => {
-  try {
-    const todos = await Todo.findAll();
-    return response.json(todos);
-  } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+app
+  .route("/todos")
+  .get(async (request, response) => {
+    try {
+      const todos = await Todo.findAll();
+      return response.json(todos);
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+  .post(async (request, response) => {
+    try {
+      const { title, dueDate } = request.body;
 
-app.post("/todos", async (request, response) => {
-  console.log("creating todo", request.body);
-  try {
-    await Todo.addTask({
-      title: request.body.title,
-      dueDate: request.body.dueDate,
-      completed: false,
-    });
-    return response.redirect("/");
-  } catch (error) {
-    console.log(error);
-    return response.status(422).json(error);
-  }
-});
+      // Server-side validation
+      if (!title || !dueDate) {
+        return response
+          .status(422)
+          .json({ error: "Title and dueDate are required." });
+      }
 
-app.put("/todos/:id/markAsComplete", async (request, response) => {
-  try {
-    const updatedTodo = await Todo.markAsComplete(request.params.id);
-    return response.json(updatedTodo);
-  } catch (error) {
-    console.error(error);
-    return response
-      .status(422)
-      .json({ error: "Failed to mark todo as complete." });
-  }
-});
+      await Todo.addTask({
+        title,
+        dueDate,
+        completed: false,
+      });
 
-// eslint-disable-next-line no-unused-vars
-app.delete("/todos/:id", async (request, response) => {
-  console.log("todo deleted with ID - ", request.params.id);
-  try {
-    await Todo.remove(request.params.id);
-    return response.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+      return response.redirect("/");
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  });
+
+app
+  .route("/todos/:id")
+  .put(async (request, response) => {
+    try {
+      const { completed } = request.body;
+
+      if (completed === undefined) {
+        return response
+          .status(422)
+          .json({ error: "Missing 'completed' field in the request body." });
+      }
+
+      const updatedTodo = await Todo.setCompletionStatus(
+        request.params.id,
+        completed,
+      );
+      return response.json(updatedTodo);
+    } catch (error) {
+      console.error(error);
+      return response.status(422).json({ error: "Failed to update todo." });
+    }
+  })
+  .delete(async (request, response) => {
+    try {
+      await Todo.remove(request.params.id);
+      return response.json({ success: true });
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Internal Server Error" });
+    }
+  });
 
 // app.listen(3000,()=>{
 //     console.log("server started at port 3000")
