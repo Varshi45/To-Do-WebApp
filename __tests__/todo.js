@@ -78,14 +78,11 @@ describe("Todo test suite", () => {
     await agent.put(`/todos/${latestTodo.id}`).send({
       _csrf: csrfToken,
     });
-    // console.log(latestTodo);
-    // const parsedUpdatedResponse = JSON.parse(markAsCompleteResponse.text);
     expect(latestTodo.completed).toBe(false);
   });
   test("Delete a todo by ID", async () => {
     let res = await agent.get("/");
     let csrfToken = extractCsrfToken(res);
-    // Create a new todo
     await agent.post("/todos").send({
       title: "Delete me",
       dueDate: new Date().toISOString(),
@@ -113,7 +110,6 @@ describe("Todo test suite", () => {
     const parsedGroupResponse1 = JSON.parse(groupedTodosResposne1.text);
     const dueTodayCount1 = parsedGroupResponse1.allTodos.length;
     const latestTodo1 = parsedGroupResponse1.allTodos[dueTodayCount1 - 1];
-    // Expect a success response
     expect(latestTodo == latestTodo1).toBe(false);
   });
 });
