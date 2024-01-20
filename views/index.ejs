@@ -8,68 +8,6 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Document</title>
-    <script>
-        function addTodo() {
-            const title = document.getElementById('title').value;
-            const dueDate = document.getElementById('dueDate').value;
-            const csrfToken = document.querySelector('input[name="_csrf"]').value;
-    
-            if (!title || !dueDate) {
-                alert("Please enter both title and due date.");
-                return;
-            }
-            fetch('/todos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken,
-                },
-                body: JSON.stringify({ title, dueDate }),
-            })
-                .then((res) => {
-                    if (res.ok) {
-                        window.location.reload();
-                    }
-                })
-                .catch((err) => console.error(err));
-        }
-    
-        function updateTodo(id) {
-            const csrfToken = document.querySelector('input[name="_csrf"]').value;
-            const completed = true; // You may adjust this based on your requirements
-    
-            fetch(`/todos/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken,
-                },
-                body: JSON.stringify({ completed }),
-            })
-                .then((res) => {
-                    if (res.ok) {
-                        window.location.reload();
-                    }
-                })
-                .catch((err) => console.error(err));
-        }
-        function deleteTodo(id) {
-            const csrfToken = document.querySelector('input[name="_csrf"]').value;
-            fetch(`/todos/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken,
-                },
-            })
-                .then((res) => {
-                    if (res.ok) {
-                        window.location.reload();
-                    }
-                })
-                .catch((err) => console.error(err))
-        }
-    </script>
 </head>
 <body>
     <!-- Todo Home Page -->
@@ -77,56 +15,10 @@
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
             <%- include('header.ejs') %>
+            <p class="py-2">Welcome to To-Do Manager</p>
+            <p class="py-2">New Here?<a class="text-green-600" href="/signup">Sign-Up now...</a></p>
+            <p class="py-2">Already have an Account?<a class="text-green-600" href="/login">Sign-In</a></p>
         </div>
     </div>
-     
-    <form id="todoForm" class="w-1/2 mx-auto" method="post">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <div class="flex gap-2 py-4">
-            <div class="flex-auto">
-                <label for="title" class="sr-only">Title</label>
-                <input type="text" id="title" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
-            </div>
-            <div class="flex-auto">
-                <label for="dueDate" class="sr-only">Due Date</label>
-                <input type="date" id="dueDate" name="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4 required">
-            </div>
-            <div class="flex-none">
-                <button type="button" onclick="addTodo()" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
-            </div>
-        </div>
-    </form>
-    
-
-    <% const categories = ['Overdue', 'Due Today', 'Due Later', 'Completed']; %>
-
-    <% const today = new Date(); %>
-
-    <div class="flex gap-4 w-3/4 mx-auto">
-        <% for (var category of categories) { %>
-            <div class="flex-auto">
-                <h2><%= category %></h2>
-                
-                <% const categoryTodos = allTodos.filter(todo => {
-                    if (category === 'Overdue') {
-                        return new Date(todo.dueDate) < today && !todo.completed && new Date(todo.dueDate).toDateString() !== today.toDateString();
-                    } else if (category === 'Due Today') {
-                        return new Date(todo.dueDate).toDateString() === today.toDateString() && !todo.completed;
-                    } else if (category === 'Due Later') {
-                        return new Date(todo.dueDate) > today && !todo.completed && new Date(todo.dueDate).toDateString() !== today.toDateString();
-                    } else if (category === 'Completed') {
-                        return todo.completed;
-                    }
-                }); %>
-    
-                <p><%= categoryTodos.length %> Todos</p>
-                
-                <!-- Render the todos.ejs partial for each category -->
-                <%- include('todo.ejs', { todos: categoryTodos }) %>
-            </div>
-        <% } %>
-    </div>
-    
-
 </body>
 </html>

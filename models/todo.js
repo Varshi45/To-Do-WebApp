@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
+    static associate(models) {
+      Todo.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
+    }
+
     static async addTask(params) {
       return await Todo.create(params);
     }
@@ -58,23 +64,11 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    static async completed() {
-      try {
-        return await Todo.findAll({
-          where: {
-            completed: true,
-          },
-        });
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
-    }
-
-    static async remove(id) {
+    static async remove(id, userId) {
       return this.destroy({
         where: {
           id,
+          userId,
         },
       });
     }
@@ -103,7 +97,7 @@ module.exports = (sequelize, DataTypes) => {
       return this.findAll();
     }
 
-    static async overdue() {
+    static async overdue(userId) {
       try {
         const currentDate = new Date();
         return await Todo.findAll({
@@ -111,6 +105,7 @@ module.exports = (sequelize, DataTypes) => {
             dueDate: {
               [Op.lt]: currentDate,
             },
+            userId,
             completed: false,
           },
         });
@@ -120,7 +115,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    static async dueToday() {
+    static async dueToday(userId) {
       try {
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
@@ -132,6 +127,7 @@ module.exports = (sequelize, DataTypes) => {
               [Op.gte]: currentDate,
               [Op.lt]: tomorrowDate,
             },
+            userId,
             completed: false,
           },
         });
@@ -141,7 +137,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    static async dueLater() {
+    static async dueLater(userId) {
       try {
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
@@ -152,7 +148,22 @@ module.exports = (sequelize, DataTypes) => {
             dueDate: {
               [Op.gte]: tomorrowDate,
             },
+            userId,
             completed: false,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    static async completed(userId) {
+      try {
+        return await Todo.findAll({
+          where: {
+            completed: true,
+            userId,
           },
         });
       } catch (error) {

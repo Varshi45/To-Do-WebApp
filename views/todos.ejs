@@ -1,0 +1,133 @@
+<!-- views/todos.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Document</title>
+    <script>
+        function addTodo() {
+            const title = document.getElementById('title').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+    
+            if (!title || !dueDate) {
+                alert("Please enter both title and due date.");
+                return;
+            }
+            fetch('/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken,
+                },
+                body: JSON.stringify({ title, dueDate }),
+            })
+                .then((res) => {
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+        }
+    
+        function updateTodo(id) {
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+            const completed = true;
+    
+            fetch(`/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken,
+                },
+                body: JSON.stringify({ completed }),
+            })
+                .then((res) => {
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+        }
+        function deleteTodo(id) {
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+            fetch(`/todos/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken,
+                },
+            })
+                .then((res) => {
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err))
+        }
+    </script>
+</head>
+<body>
+    <!-- Todo Home Page -->
+    <!-- <%- include('header.ejs') %> -->
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs') %>
+            <a href="/signout">Sign Out</a>
+            <form id="todoForm" class="mx-auto" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="flex gap-2 py-4">
+                    <div class="flex-auto">
+                        <label for="title" class="sr-only">Title</label>
+                        <input type="text" id="title" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
+                    </div>
+                    <div class="flex-auto">
+                        <label for="dueDate" class="sr-only">Due Date</label>
+                        <input type="date" id="dueDate" name="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4 required">
+                    </div>
+                    <div class="flex-none">
+                        <button type="button" onclick="addTodo()" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <% const today = new Date(); %>
+    <div class="flex gap-4 w-3/4 mx-auto">
+        <div class="flex-auto">
+            <h2>Overdue</h2>
+            <p><%= overdueTodos.length %> Todos</p>
+            <!-- Render the todos.ejs partial for overdueTodos -->
+            <%- include('todo.ejs', { todos: overdueTodos }) %>
+        </div>
+
+        <div class="flex-auto">
+            <h2>Due Today</h2>
+            <p><%= dueTodayTodos.length %> Todos</p>
+            <!-- Render the todos.ejs partial for dueTodayTodos -->
+            <%- include('todo.ejs', { todos: dueTodayTodos }) %>
+        </div>
+
+        <div class="flex-auto">
+            <h2>Due Later</h2>
+            <p><%= dueLaterTodos.length %> Todos</p>
+            <!-- Render the todos.ejs partial for dueLaterTodos -->
+            <%- include('todo.ejs', { todos: dueLaterTodos }) %>
+        </div>
+
+        <div class="flex-auto">
+            <h2>Completed</h2>
+            <p><%= completedTodos.length %> Todos</p>
+            <!-- Render the todos.ejs partial for completedTodos -->
+            <%- include('todo.ejs', { todos: completedTodos }) %>
+        </div>
+    </div>
+
+
+</body>
+</html>
