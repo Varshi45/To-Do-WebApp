@@ -16,8 +16,13 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async addTask(params) {
-      return await Todo.create(params);
+      try {
+        return await Todo.create(params);
+      } catch (error) {
+        throw error;
+      }
     }
+
     static async showList() {
       console.log("My Todo list \n");
 
@@ -181,7 +186,14 @@ module.exports = (sequelize, DataTypes) => {
   }
   Todo.init(
     {
-      title: DataTypes.STRING,
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: true,
+          len: 5,
+        },
+      },
       dueDate: DataTypes.DATEONLY,
       completed: DataTypes.BOOLEAN,
     },

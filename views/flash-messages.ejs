@@ -1,0 +1,33 @@
+<!-- views/flash-messages.ejs -->
+
+<% if (messages && messages.error && messages.error.length > 0) { %>
+    <ul class="flash-message error" id="error-messages">
+      <% for (var i = 0; i < messages.error.length; i++) { %>
+        <li class="Error-Message"><%= messages.error[i] %></li>
+      <% } %>
+    </ul>
+  <% } %>
+  
+  <% if (messages && messages.success && messages.success.length > 0) { %>
+    <ul class="flash-message success" id="success-messages">
+      <% for (var i = 0; i < messages.success.length; i++) { %>
+        <li class="Success-Message"><%= messages.success[i] %></li>
+      <% } %>
+    </ul>
+  <% } %>
+
+<script>
+  // Automatically hide flash messages after a timeout
+  setTimeout(function() {
+    var errorMessages = document.getElementById('error-messages');
+    var successMessages = document.getElementById('success-messages');
+
+    if (errorMessages) {
+      errorMessages.style.display = 'none';
+    }
+
+    if (successMessages) {
+      successMessages.style.display = 'none';
+    }
+  }, 3000);
+</script>

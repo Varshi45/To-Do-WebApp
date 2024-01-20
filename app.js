@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 const path = require("path");
+const flash = require("connect-flash");
 // const { error } = require("console");
 
 const passport = require("passport");
@@ -14,13 +15,14 @@ const bcrypt = require("bcrypt");
 
 const saltRounds = 10;
 
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf({ cookie: true }));
 app.use(express.static(path.join(__dirname, "public")));
-
-app.set("view engine", "ejs");
 
 app.use(
   session({
@@ -31,8 +33,14 @@ app.use(
   }),
 );
 
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(function (request, response, next) {
+  response.locals.messages = request.flash();
+  next();
+});
 
 passport.use(
   new LocalStrategy(
@@ -42,16 +50,16 @@ passport.use(
     },
     (username, password, done) => {
       User.findOne({ where: { email: username } })
-        .then(async (user) => {
+        .then(async function (user) {
           const result = await bcrypt.compare(password, user.password);
           if (result) {
             return done(null, user);
           } else {
-            done("Invalid password");
+            return done(null, false, { message: "Invalid password" });
           }
         })
-        .catch((error) => {
-          return error;
+        .catch((err) => {
+          return done(err);
         });
     },
   ),
@@ -103,14 +111,23 @@ app.get("/signout", (request, response, next) => {
 });
 
 app.post("/users", async (request, response) => {
-  const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
   try {
+    const { firstName, email, password } = request.body;
+
+    // Check if required fields are provided
+    if (!firstName || !email || !password) {
+      request.flash("error", "Please provide first name, email, and password.");
+      return response.redirect("/signup");
+    }
+
+    const hashedPwd = await bcrypt.hash(password, saltRounds);
     const user = await User.create({
-      firstName: request.body.firstName,
+      firstName,
       lastName: request.body.lastName,
-      email: request.body.email,
+      email,
       password: hashedPwd,
     });
+
     request.login(user, (err) => {
       if (err) {
         console.log(err);
@@ -119,14 +136,20 @@ app.post("/users", async (request, response) => {
     });
   } catch (error) {
     console.log(error);
+    // Handle other errors or redirect as needed
+    request.flash("error", "Failed to create a new user.");
+    return response.redirect("/signup");
   }
 });
 
 app.post(
   "/session",
-  passport.authenticate("local", { failureRedirect: "/login" }),
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
   (request, response) => {
-    console.log(request.user);
+    // console.log(request.user);
     response.redirect("/todos");
   },
 );
@@ -171,8 +194,7 @@ app
     try {
       const { title, dueDate } = request.body;
       const userId = request.user.id;
-      // console.log(userId, "userId value ");
-      // Server-side validation
+
       if (!title || !dueDate) {
         return response
           .status(422)
@@ -186,9 +208,17 @@ app
         completed: false,
       });
 
-      return response.redirect("/");
+      // request.flash('success', 'To-do added successfully');
+      return response.redirect("/todos");
     } catch (error) {
-      console.log(error);
+      if (
+        error.name === "SequelizeValidationError" &&
+        error.errors[0].validatorKey === "len"
+      ) {
+        return response.redirect("/todos");
+      }
+      console.error(error);
+      // request.flash('error', 'Failed to add a new to-do');
       return response.status(422).json(error);
     }
   });
@@ -209,6 +239,13 @@ app
         request.params.id,
         completed,
       );
+
+      request.flash(
+        "success",
+        `Todo status updated successfully: ${
+          updatedTodo.completed ? "Completed" : "Not Completed"
+        }`,
+      );
       return response.json(updatedTodo);
     } catch (error) {
       console.error(error);
@@ -219,9 +256,12 @@ app
     try {
       const userId = request.user.id;
       await Todo.remove(request.params.id, userId);
+
+      request.flash("success", "To-do deleted successfully");
       return response.json({ success: true });
     } catch (error) {
       console.error(error);
+      request.flash("error", "Failed to delete the to-do");
       return response.status(500).json({ error: "Internal Server Error" });
     }
   });

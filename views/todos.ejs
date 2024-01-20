@@ -69,6 +69,15 @@
                 })
                 .catch((err) => console.error(err))
         }
+        // window.addEventListener('load', function () {
+        //     document.getElementById('todoForm').addEventListener('submit', function (event) {
+        //         const titleInput = document.getElementById('title');
+        //         if (titleInput.value.length < 5) {
+        //             alert('Title must be at least 5 characters long.');
+        //             event.preventDefault(); // Prevent the form from submitting
+        //         }
+        //     });
+        // });
     </script>
 </head>
 <body>
@@ -77,7 +86,11 @@
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
             <%- include('header.ejs') %>
-            <a href="/signout">Sign Out</a>
+            <div class="text-right">
+                <a href="/signout" class="sign-out-link">Sign Out</a>
+            </div>
+            <%- include('flash-messages.ejs') %>
+            
             <form id="todoForm" class="mx-auto" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <div class="flex gap-2 py-4">
@@ -127,7 +140,6 @@
             <%- include('todo.ejs', { todos: completedTodos }) %>
         </div>
     </div>
-
 
 </body>
 </html>

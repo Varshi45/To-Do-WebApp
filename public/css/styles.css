@@ -5,3 +5,34 @@ body {
 .Todo-Item:hover .trash-icon{
     display: block;
 }
+
+a.sign-out-link {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a.sign-out-link:hover {
+    color: #ff0000;
+    text-decoration: underline;
+}
+
+.Error-Message{
+    list-style: none;
+}
+.flash-message {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .success {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .error {
+    background-color: #f44336;
+    color: white;
+  }
+  

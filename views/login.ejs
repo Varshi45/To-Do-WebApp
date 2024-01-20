@@ -17,17 +17,35 @@
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <div class="py-3">
                     <label for="email">Email:</label>
-                    <input type="email" name="email" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    <input type="email" name="email" class="border border-gray-300 text-gray-900 rounded p-2 w-full" required>
                 </div>
                 <div class="py-3">
                     <label for="password">Password:</label>
-                    <input type="password" name="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    <input type="password" name="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full" required>
                 </div>
                 <div class="text-center py-3">
                     <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Sign In</button>
                 </div>
-                
             </form>
+            
+            <% if(messages && messages.error && messages.error.length > 0)  { %>
+                <div class="flash-message error">
+                    <ul>
+                        <% for(var i=0; i<messages.error.length; i++) { %>
+                            <li class="Error-Message"><%= messages.error[i] %></li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const errorMessages = document.querySelector('.flash-message.error');
+                    if (errorMessages && errorMessages.querySelector('li')) {
+                        errorMessages.style.display = 'block';
+                    }
+                });
+            </script>
         </div>
     </div>
 </body>
