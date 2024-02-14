@@ -80,7 +80,7 @@
         // });
     </script>
 </head>
-<body>
+<body style="background-image: url('https://thumbs.dreamstime.com/b/todo-list-seamless-pattern-universal-background-66678083.jpg');">
     <!-- Todo Home Page -->
     <!-- <%- include('header.ejs') %> -->
     <div class="grid grid-cols-6">
@@ -113,28 +113,28 @@
     <% const today = new Date(); %>
     <div class="flex gap-4 w-3/4 mx-auto">
         <div class="flex-auto">
-            <h2>Overdue</h2>
+            <h2 class="text-xl font-bold mb-2">Overdue</h2>
             <p><%= overdueTodos.length %> Todos</p>
             <!-- Render the todos.ejs partial for overdueTodos -->
             <%- include('todo.ejs', { todos: overdueTodos }) %>
         </div>
 
         <div class="flex-auto">
-            <h2>Due Today</h2>
+            <h2 class="text-xl font-bold mb-2">Due Today</h2>
             <p><%= dueTodayTodos.length %> Todos</p>
             <!-- Render the todos.ejs partial for dueTodayTodos -->
             <%- include('todo.ejs', { todos: dueTodayTodos }) %>
         </div>
 
         <div class="flex-auto">
-            <h2>Due Later</h2>
+            <h2 class="text-xl font-bold mb-2">Due Later</h2>
             <p><%= dueLaterTodos.length %> Todos</p>
             <!-- Render the todos.ejs partial for dueLaterTodos -->
             <%- include('todo.ejs', { todos: dueLaterTodos }) %>
         </div>
 
         <div class="flex-auto">
-            <h2>Completed</h2>
+            <h2 class="text-xl font-bold mb-2">Completed</h2>
             <p><%= completedTodos.length %> Todos</p>
             <!-- Render the todos.ejs partial for completedTodos -->
             <%- include('todo.ejs', { todos: completedTodos }) %>
