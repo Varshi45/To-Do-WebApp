@@ -1,5 +1,3 @@
-Sure, here's an example of what your GitHub README file could look like for your Express.js application:
-
 ---
 
 # Todo List Application
